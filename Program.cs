@@ -14,4 +14,4 @@ int[] arr1 = { 2, 5, 7, 1, 1, 4567, 3, 56, 123, 7 };
 //Console.WriteLine(orderSearch.FbiSearch(arr, 2));
 
 Sort sort = new Sort();
-sort.EasySelectSort(arr1);
+sort.InstantInsertSort(arr1);

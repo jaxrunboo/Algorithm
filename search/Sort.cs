@@ -110,6 +110,28 @@ namespace Algorithm.search
             PrintArr(arr);
         }
 
+        public void InstantInsertSort(int[] arr)
+        {
+            int temp = 0;
+            int j = 0;
+            for (int i = 1; i < arr.Length; i++)
+            {
+                if (arr[i] < arr[i - 1])
+                {
+                    temp = arr[i];
+                    //如果arr[j]始终大于temp，就要一直往移一位
+                    //最终情况，如果arr[0]
+                    for (j = i - 1; j >= 0 && arr[j] > temp; j--)
+                    {
+                        arr[j + 1] = arr[j];
+                    }
+                    //此处的j+1并非表示逻辑index，而是上面循环执行结束后，j又多减了一次1，所以加上
+                    arr[j + 1] = temp;
+                }
+            }
+            PrintArr(arr);
+        }
+
         private void Swap(int[] arr, int first, int second)
         {
             int temp = arr[first];
