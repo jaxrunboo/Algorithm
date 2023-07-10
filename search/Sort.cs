@@ -26,10 +26,7 @@ namespace Algorithm.search
                 }
             }
 
-            foreach (int i in arr)
-            {
-                Console.WriteLine(i);
-            }
+            PrintArr(arr);
         }
 
 
@@ -51,10 +48,7 @@ namespace Algorithm.search
                     }
                 }
             }
-            foreach (int i in arr)
-            {
-                Console.WriteLine(i);
-            }
+            PrintArr(arr);
         }
 
         /// <summary>
@@ -79,11 +73,41 @@ namespace Algorithm.search
                     }
                 }
             }
-            foreach (int i in arr)
-            {
-                Console.WriteLine(i);
-            }
+            PrintArr(arr);
 
+        }
+        
+        
+        /// <summary>
+        /// 简单选择排序
+        /// 逻辑就是每次循环选中最小值的index，与起始index元素swap
+        /// 
+        /// </summary>
+        /// <param name="arr"></param>
+        public void EasySelectSort(int[] arr)
+        {
+            /*
+             * 思路相差不大，从第一个元素开始循环，用一个min做标识，跟后面循环比较
+             * 直到找到最小值才会进行swap
+             * 相对冒泡来讲，降低了swap的次数，但是没有降低查找次数，T不变
+             */
+            int min = 0;
+            for (int i = 0; i < arr.Length; i++)
+            {
+                min = i;
+                for (int j = i+1; j < arr.Length; j++)
+                {
+                    if(arr[j] < arr[i])
+                    {
+                        min = j;
+                    }
+                }
+                if(min != i)
+                {
+                    Swap(arr,min,i);
+                }
+            }
+            PrintArr(arr);
         }
 
         private void Swap(int[] arr, int first, int second)
@@ -91,6 +115,14 @@ namespace Algorithm.search
             int temp = arr[first];
             arr[first] = arr[second];
             arr[second] = temp;
+        }
+
+        private void PrintArr(int[] arr)
+        {
+            foreach (int i in arr)
+            {
+                Console.WriteLine(i);
+            }
         }
     }
 }
