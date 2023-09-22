@@ -25,11 +25,10 @@ namespace Algorithm.search
 
             int count = 0;
 
-            //start<= end而不是start<end的原因：奇数情况下，最后会面临这个情况
             while (start <= end)
             {
                 Console.WriteLine("HalfSearch运行次数:" + count++);
-                int mid = (start + end) / 2;
+                int mid = GetMidIndex(start, end);
                 if (arr[mid] < num)
                 {
                     start = mid + 1;
@@ -50,6 +49,10 @@ namespace Algorithm.search
         /// 插值查找(折半的升级版)
         /// 前提是查找arr顺序且分布均匀
         /// 是以一个占比的思路去设计的
+        /// 
+        /// 只是修改了mid的取值方式，以比重的方式去获取
+        /// 这种思路，在逻辑上好像是可行的，要求arr强顺序，强分布均匀，要求其实有点非常高了
+        /// 但是如果我的参数能够满足这个要求，就更像是人类去进行结果预估了
         /// </summary>
         /// <param name="arr"></param>
         /// <param name="num"></param>
@@ -61,12 +64,11 @@ namespace Algorithm.search
             int end = arr.Length - 1;
             int count = 0;
 
-            //start<= end而不是start<end的原因：奇数情况下，最后会面临这个情况
             while (start <= end)
             {
                 Console.WriteLine("InterpolationSearch运行次数:" + count++);
                 //查询元素index的占比位置
-                int mid = start + (num - arr[start]) / (arr[end] - arr[start]) * (end - start);
+                int mid = GetMidIndex(start, end, arr, num);
                 if (arr[mid] < num)
                 {
                     start = mid + 1;
@@ -81,6 +83,23 @@ namespace Algorithm.search
                 }
             }
             return -1;
+        }
+
+        
+
+        private int GetMidIndex(int startIndex,int endIndex)
+        {
+            return (startIndex + endIndex) / 2;
+        }
+
+        private int GetMidIndex(int startIndex,int endIndex, int[] arr,int num)
+        {
+            return startIndex + (num - arr[startIndex]) / (arr[endIndex] - arr[startIndex]) * (endIndex - startIndex);
+        }
+
+        private int GetMidIndexForFBI(int start,int k)
+        {
+            return start + Fbi(k) - 1;
         }
 
         /// <summary>
@@ -114,18 +133,18 @@ namespace Algorithm.search
              */
             int k = 0;
             int start = 0;
-            int end = arr.Length;
-            int oldEnd = arr.Length;
+            int end = arr.Length -1;
+            int oldEnd = arr.Length -1;
 
             int count = 0;
 
-
-            while (arr.Length > Fbi(k)-1)
+            //取长度最合适的k
+            while (end > Fbi(k) - 1)
             {
                 k++;
             }
-
-            for(int fbiStart =arr.Length -1; fbiStart < Fbi(k) - 1; fbiStart++)
+            //补足右侧不足的数组内容
+            for(int fbiStart =arr.Length; fbiStart < Fbi(k) - 1; fbiStart++)
             {
                 arr[fbiStart] = arr[arr.Length - 1];
             }
@@ -134,8 +153,8 @@ namespace Algorithm.search
             {
                 Console.WriteLine("FbiSearch运行次数:" + count++);
 
-                int mid = start + Fbi(k-1) - 1;
-                if(arr[mid] < num)
+                int mid = GetMidIndexForFBI(start, k);
+                if (arr[mid] < num)
                 {
                     start = mid + 1;
                     k = k - 2;
@@ -147,6 +166,7 @@ namespace Algorithm.search
                 }
                 else
                 {
+                    //此处的条件是因为，很可能mid一直取右边，超出了length，而超出length的值都是相等的
                     if(mid<= oldEnd)
                     {
                         return mid;
