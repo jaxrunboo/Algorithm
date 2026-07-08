@@ -85,8 +85,6 @@ namespace Algorithm.search
             return -1;
         }
 
-        
-
         private int GetMidIndex(int startIndex,int endIndex)
         {
             return (startIndex + endIndex) / 2;
@@ -99,7 +97,7 @@ namespace Algorithm.search
 
         private int GetMidIndexForFBI(int start,int k)
         {
-            return start + Fbi(k) - 1;
+            return start + Fbi(k - 1) - 1;
         }
 
         /// <summary>
@@ -116,7 +114,6 @@ namespace Algorithm.search
             return Fbi(index - 1) + Fbi(index - 2);
 
         }
-
 
         /// <summary>
         /// 裴波那契查找(折半查找的升级版)
@@ -138,8 +135,8 @@ namespace Algorithm.search
 
             int count = 0;
 
-            //取长度最合适的k
-            while (end > Fbi(k) - 1)
+            //取长度最合适的k 要求Fbi(k)-1 >= arr.length
+            while (arr.Length > Fbi(k) - 1)
             {
                 k++;
             }
@@ -154,12 +151,12 @@ namespace Algorithm.search
                 Console.WriteLine("FbiSearch运行次数:" + count++);
 
                 int mid = GetMidIndexForFBI(start, k);
-                if (arr[mid] < num)
+                if (arr[mid] < num) //num位于mid右侧
                 {
                     start = mid + 1;
                     k = k - 2;
                 }
-                else if(arr[mid] > num)
+                else if(arr[mid] > num)//左侧
                 {
                     end =mid -1;
                     k = k - 1;

@@ -8,7 +8,7 @@ int[] arr = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
 int[] arr1 = { 2, 5, 7, 1, 1, 4567, 3, 56, 123, 7 };
 
-arr.ToList()[0]
+Dictionary<int, int> dict = new Dictionary<int, int>();
 
 //Sort sort = new Sort();
 //sort.InstantInsertSort(arr1);
