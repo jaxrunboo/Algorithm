@@ -123,5 +123,72 @@ namespace Algorithm
 
         }
 
+        public double MaximumAverageSubarrayI(int[] nums, int k)
+        {
+            /*
+            题目内容：
+            给定一个含有 n 个正整数的数组和一个正整数 k 。
+            返回该数组中长度为 k 的子数组的最大平均值。
+            
+            思路：
+            这是固定长度的滑动窗口
+            但是如果每个窗口平行移动，去求平均值，应该是O(k * n)
+            所以，如果我只是在平移的时候，右侧+1，左侧-1，然后求均值
+            他是不是就是 O(3n) 也就是 O(n)
+            */
+
+            int left = 0;
+            var aveSum = 0;
+            var maxAveSum = int.MinValue;
+
+            for (int i = 0; i < k; i++)
+            {
+                aveSum += nums[i];
+            }
+            maxAveSum = Math.Max(maxAveSum, aveSum);
+
+            for (int right = k; right < nums.Length; right++, left++)
+            {
+                aveSum = aveSum - nums[left] + nums[right];
+                maxAveSum = Math.Max(maxAveSum, aveSum);
+            }
+
+            return (double)maxAveSum / k;
+        }
+
+
+        public int MinimumSizeSubarraySum1(int target, int[] nums)
+        {
+            /*
+            题目内容：
+            给定一个含有 n 个正整数的数组和一个正整数 target 。
+            返回该数组中满足其和 ≥ target 的长度最小的 
+            连续子数组的最小长度，并返回其长度。如果不存在符合条件的子数组，返回 0 。
+            
+
+            思路：
+            这个就不是固定滑动窗口了，就要考虑好窗口变化的条件
+            可以是 >= target left++
+            < target right++
+
+            时间复杂度应该是O(n)
+            */
+
+            int left = 0;
+            int sum = 0;
+            int minLength = int.MaxValue;
+
+            for (int right = 0; right < nums.Length; right++)
+            {
+                sum += nums[right];
+                while (sum >= target)
+                {
+                    var length = right - left + 1;
+                    minLength = Math.Min(minLength, length);
+                    sum -= nums[left++];
+                }
+            }
+            return minLength == int.MaxValue ? 0 : minLength;
+        }
     }
 }
