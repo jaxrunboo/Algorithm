@@ -449,5 +449,120 @@ namespace Algorithm
             return Math.Max(leftDepth, rightDepth) + 1;
         }
 
+
+        public int BinaryTreeMaximumPathSum(TreeNode root)
+        {
+            /*
+            题目：
+            二叉树的最大路径和
+            路径和是路径上所有节点值的和
+
+            思路：
+            递归，计算左子树和右子树的和，然后返回左子树和右子树的和之和
+            也是DFS的后序
+            需要一个额外的值来记录最大路径和
+
+            每个节点要返回左右子树的两者的最大路径和和当前节点值的和，也就是当前节点下的最大路径和，并且要更新最大路径和
+            可是，如果我只要当前节点的最大路径和，我最终root节点拿到的不就是最大路径和吗，为什么还要一个额外字段呢，除非这两个并不是一个含义
+            或者说，跟上一题目类似。最大路径和可能是不过root的，因为可能存在负数节点
+
+            */
+
+            MaxPathSum = int.MinValue;
+            GetMaxPathSum(root);
+            return MaxPathSum;
+        }
+
+        private int MaxPathSum = int.MinValue;
+        private int GetMaxPathSum(TreeNode root)
+        {
+            if (root is null) return 0;
+            var leftMaxPathSum = GetMaxPathSum(root.left);
+            var rightMaxPathSum = GetMaxPathSum(root.right);
+
+            if (leftMaxPathSum < 0) leftMaxPathSum = 0;
+            if (rightMaxPathSum < 0) rightMaxPathSum = 0;
+
+            // 返回给上层的是，是左右节点的最长路径，目的是给节点做后续判断使用的，如果是包含拐点的最长路径，上层节点无法使用
+            var currentMaxPath = root.val + Math.Max(leftMaxPathSum, rightMaxPathSum);
+            var maxPathSumThroughRoot = root.val + leftMaxPathSum + rightMaxPathSum; // 在当前节点拐弯的最大路径
+            MaxPathSum = Math.Max(MaxPathSum, maxPathSumThroughRoot);
+            return currentMaxPath;
+        }
+
+        public TreeNode ConstructBinaryTreeFromPreorderAndInorderTraversal(int[] preorder, int[] inorder)
+        {
+            /*
+            题目：
+            从前序与中序遍历序列构造二叉树
+            思路：
+
+            前序的第一个节点是root
+            中序的root左侧是左子树，右侧是右子树
+            想办法递归下去
+            但是这个题目看起来需要要求树的值是不同的，不然看起来无法命中
+            */
+
+            var inDict = new Dictionary<int, int>();
+
+            for (int i = 0; i < inorder.Length; i++)
+            {
+                inDict.Add(inorder[i], i);
+            }
+
+            return Construct(preorder, 0, preorder.Length - 1, inDict, inorder, 0, inorder.Length - 1);
+
+
+        }
+
+        private TreeNode Construct(int[] preorder, int preStart, int preEnd,
+         Dictionary<int, int> inDict, int[] inorder, int inStart, int inEnd)
+        {
+            if (preStart > preEnd) return null;
+            if (inStart > inEnd) return null;
+
+            var root = preorder[preStart];
+            var inIndex = inDict[root];
+
+            var treeNode = new TreeNode(root);
+            treeNode.left = Construct(preorder, preStart + 1, preStart + inIndex - inStart, inDict, inorder, inStart, inIndex - 1);
+            treeNode.right = Construct(preorder, preStart + inIndex - inStart + 1, preEnd, inDict, inorder, inIndex + 1, inEnd);
+            return treeNode;
+        }
+
+
+        public TreeNode ConstructBinaryTreeFromInorderAndPostorderTraversal(int[] inorder, int[] postorder)
+        {
+            /*
+            题目：
+            从中序与后序遍历序列构造二叉树
+            思路：
+            后序的最后一个节点是root
+            结合中序组成字典来进行递归处理
+            */
+            var inDict = new Dictionary<int, int>();
+            for (int i = 0; i < inorder.Length; i++)
+            {
+                inDict.Add(inorder[i], i);
+            }
+
+            return ConstructPost(inDict, 0, inDict.Count - 1, postorder, 0, postorder.Length - 1);
+        }
+
+        private TreeNode ConstructPost(Dictionary<int, int> inDict, int inStart, int inEnd,
+         int[] postorder, int postStart, int postEnd)
+        {
+            if (postStart > postEnd) return null;
+            if (inStart > inEnd) return null;
+
+            var root = postorder[postEnd];
+            var inIndex = inDict[root];
+
+            var treeNode = new TreeNode(root);
+            treeNode.left = ConstructPost(inDict, inStart, inIndex - 1, postorder, postStart, postStart + inIndex - inStart - 1);
+            treeNode.right = ConstructPost(inDict, inIndex + 1, inEnd, postorder, postStart + inIndex - inStart, postEnd - 1);
+            return treeNode;
+        }
+
     }
 }
