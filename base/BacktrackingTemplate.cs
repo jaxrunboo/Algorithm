@@ -107,5 +107,85 @@ namespace Algorithm
             }
         }
 
+        public List<List<int>> Permutations(int[] nums)
+        {
+            var result = new List<List<int>>();
+            var current = new List<int>();
+            var used = new bool[nums.Length];
+
+            Backtrack2(nums, result, current, used);
+            return result;
+        }
+
+        private void Backtrack2(int[] nums, List<List<int>> result, List<int> current, bool[] used)
+        {
+            if (current.Count == nums.Length)
+            {
+                result.Add(new List<int>(current));
+                return;
+            }
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (used[i])
+                {
+                    continue;
+                }
+
+                current.Add(nums[i]);
+                used[i] = true;
+
+                Backtrack2(nums, result, current, used);
+
+                current.RemoveAt(current.Count - 1);
+                used[i] = false;
+            }
+
+        }
+
+
+        public List<List<int>> Permutations2(int[] nums)
+        {
+            var result = new List<List<int>>();
+            var current = new List<int>();
+            var used = new bool[nums.Length];
+
+            Arrauy.Sort(nums);
+
+            Backtrack3(nums, result, current, used);
+            return result;
+        }
+
+        private void Backtrack3(int[] nums, List<List<int>> result, List<int> current, bool[] used)
+        {
+            if (current.Count == nums.Length)
+            {
+                result.Add(new List<int>(current));
+                return;
+            }
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (used[i])
+                {
+                    continue;
+                }
+
+                if(i > 0 && nums[i] ==nums[i-1] && !used[i - 1])
+                {
+                    continue;
+                }
+
+                current.Add(nums[i]);
+                used[i] = true;
+
+                Backtrack2(nums, result, current, used);
+
+                current.RemoveAt(current.Count - 1);
+                used[i] = false;
+            }
+
+        }
+
     }
 }

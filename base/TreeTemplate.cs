@@ -564,5 +564,61 @@ namespace Algorithm
             return treeNode;
         }
 
+        public string SerializeBinaryTree(TreeNode node)
+        {
+            /*
+            思路：
+            要求对Null的内容有记录，这样才能知道谁是叶子节点
+
+            前序递归，每次返回补充的path
+            */
+
+            var list = new List<string>();
+            SerializePreOrderNode(node, list);
+            return string.Join(",", list);
+
+        }
+
+        private void SerializePreOrderNode(TreeNode node, List<string> path)
+        {
+            if (node is null)
+            {
+                path.Add("#");
+                return;
+            }
+
+            path.Add(node.val.ToString());
+
+            SerializePreOrderNode(node.left, path);
+            SerializePreOrderNode(node.right, path);
+        }
+
+        public TreeNode DeserializeBinaryTree(string path)
+        {
+            /*
+            思路:
+            用，拆分，接下来获得的就是前序数组
+            第一个值是根节点，后面的#是前一个节点的子节点，第一个是左，第二个是右
+            */
+            var queue = new QueueTemplate<string>(path.Split(','));
+            return DeserializeBT(queue);
+        }
+
+        public TreeNode DeserializeBT(Queue<string> queue)
+        {
+            var val = queue.Dequeue();
+            if (val == "#")
+            {
+                return null;
+            }
+
+            var newNode = new TreeNode(int.Parse(val));
+
+            newNode.left = DeserializeBT(queue);
+            newNode.right = DeserializeBT(queue);
+            return newNode;
+
+        }
+
     }
 }
