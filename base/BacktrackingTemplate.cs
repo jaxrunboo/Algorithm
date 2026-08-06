@@ -287,6 +287,134 @@ namespace Algorithm
 
             return false;
         }
+
+
+        public List<string> LetterCombinationsOfaPhoneNumber(string digits)
+        {
+            /*
+            题目：
+            给定一个包含数字2-9的字符串digits，返回所有可能的字母组合。
+            每个数字对应一个字母，2对应abc，3对应def，4对应ghi，5对应jkl，6对应mno，7对应pqrs，8对应tuv，9对应wxyz
+            例如：
+            digits = "23"
+
+            答案：
+            ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+
+            思路：
+            回溯
+            这明显是各个数组的值都是唯一的，而且顺序已经排好了
+            所以，满足数量就可以获得结果
+
+            */
+
+            var result = new List<string>();
+            var current = new List<string>();
+
+            var dict = new Dictionary<char, string>
+            {
+                {'0', ""},
+                {'1', ""},
+                {'2', "abc"},
+                {'3', "def"},
+                {'4', "ghi"},
+                {'5', "jkl"},
+                {'6', "mno"},
+                {'7', "pqrs"},
+                {'8', "tuv"},
+                {'9', "wxyz"},
+            };
+
+            BackTrackLetterCombinationsOfaPhoneNumber(result, current, dict, digits, 0);
+            return result;
+        }
+
+        private void BackTrackLetterCombinationsOfaPhoneNumber(List<string> result, List<string> current, Dictionary<char, string> dict, string digits, int index)
+        {
+            if (current.Count == digits.Length)
+            {
+                result.Add(string.Join("", current));
+                return;
+            }
+
+            var success = dict.TryGetValue(digits[index], out string digitValue);
+            if (!success) return;
+
+            foreach (var letter in digitValue)
+            {
+                current.Add(letter.ToString());
+                BackTrackLetterCombinationsOfaPhoneNumber(result, current, dict, digits, index + 1);
+                current.RemoveAt(current.Count - 1);
+            }
+
+        }
+
+        public List<string> RestoreIPAddresses(string s)
+        {
+            /*
+            题目：
+            给定一个只包含数字的字符串s，请将它分割成三个或四个子字符串，每个子字符串代表一个IP地址的一部分。
+            返回所有可能的IP地址组合。
+
+            例如：
+            s = "25525511135"
+            答案：
+            ["255.255.11.135","255.255.111.35"]
+
+            思路：
+            回溯
+            
+            我如何判断这个字符是ip的一部分呢
+            如果这个字符是ip的一部分，那么这个字符的值不能大于255
+            如果这个字符是ip的一部分，那么这个字符的值不能小于0
+
+            问题似乎可以转化成，s的组合情况，每个组合都代表一个ip地址的一部分
+            必须只能组合成4个，多了就不满足场景
+            可以进行适当的剪枝
+
+
+            */
+
+            var result = new List<string>();
+            var current = new List<string>();
+            BackTrackRestoreIPAddresses(result, current, s, 0);
+            return result;
+
+        }
+
+        private void BackTrackRestoreIPAddresses(List<string> result, List<string> current, string s, int index)
+        {
+            if (current.Count == 4)
+            {
+                if (index == s.Length)
+                {
+                    result.Add(string.Join(".", current));
+                }
+                return;
+            }
+
+            for (int i = index; i < s.Length && i - index < 3; i++)
+            {
+                var segment = s.Substring(index, i - index + 1);
+                if (!IsValidSegment(segment))
+                {
+                    continue;
+                }
+                current.Add(segment);
+                BackTrackRestoreIPAddresses(result, current, s, i + 1);
+                current.RemoveAt(current.Count - 1);
+            }
+        }
+
+        private bool IsValidSegment(string segment)
+        {
+            if (segment.Length > 1 && segment[0] == '0')
+            {
+                return false;
+            }
+            return int.Parse(segment) <= 255;
+        }
+
     }
 
 }
