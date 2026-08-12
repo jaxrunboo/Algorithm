@@ -2,6 +2,10 @@ namespace Algorithm
 {
     public class GraphBfsTemplate
     {
+        private int[] dx = new int[] { 1, -1, 0, 0 };
+        private int[] dy = new int[] { 0, 0, 1, -1 };
+
+
         public int RottingOranges(int[][] grid)
         {
             /*
@@ -76,7 +80,6 @@ namespace Algorithm
                         // 这不死循环了吗
                         // 是的，所以需要一个visited数组来记录已经访问过的橘子
                         queue.Enqueue((x - 1) * grid[0].Length + y);
-                        visited[x - 1, y] = true;
                         isRotten = true;
                     }
                     if (x < grid.Length - 1 && grid[x + 1][y] == 1)
@@ -84,7 +87,6 @@ namespace Algorithm
                         grid[x + 1][y] = 2;
                         freshCount--;
                         queue.Enqueue((x + 1) * grid[0].Length + y);
-                        visited[x + 1, y] = true;
                         isRotten = true;
                     }
                     if (y > 0 && grid[x][y - 1] == 1)
@@ -92,7 +94,6 @@ namespace Algorithm
                         grid[x][y - 1] = 2;
                         freshCount--;
                         queue.Enqueue(x * grid[0].Length + y - 1);
-                        visited[x, y - 1] = true;
                         isRotten = true;
                     }
                     if (y < grid[0].Length - 1 && grid[x][y + 1] == 1)
@@ -100,7 +101,6 @@ namespace Algorithm
                         grid[x][y + 1] = 2;
                         freshCount--;
                         queue.Enqueue(x * grid[0].Length + y + 1);
-                        visited[x, y + 1] = true;
                         isRotten = true;
                     }
                 }
@@ -115,6 +115,72 @@ namespace Algorithm
                 return -1;
             }
             return result;
+        }
+
+
+        public int[][] Matrix01(int[][] matrix)
+        {
+            /*
+            题目内容：
+            给定一个由 0 和 1 组成的矩阵，找出每个元素到最近的 0 的距离。
+            两个相邻元素间的距离为 1 。
+
+            示例 1：
+            输入：matrix = [[0,0,0],[0,1,0],[0,0,0]]
+            输出：[[0,0,0],[0,1,0],[0,0,0]]
+
+            思路：
+            BFS，先把0入队，这样可以预先把0 周围的所有1先处理掉
+            这样后续再处理的时候，就可以依赖 周围1的值去累加，得到和0的最小距离
+
+            */
+
+            var dist = new int[matrix.Length][];
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                dist[i] = new int[matrix[0].Length];
+            }
+
+            var queue = new Queue<int>();
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                for (int j = 0; j < matrix[0].Length; j++)
+                {
+                    if (matrix[i][j] == 0)
+                    {
+                        queue.Enqueue(i * matrix[0].Length + j);
+                    }
+                    else
+                    {
+                        dist[i][j] = -1;
+                    }
+                }
+            }
+
+            while (queue.Count > 0)
+            {
+                var size = queue.Count;
+                for (int i = 0; i < size; i++)
+                {
+                    var index = queue.Dequeue();
+                    var x = index / matrix[0].Length;
+                    var y = index % matrix[0].Length;
+                    for (int j = 0; j < 4; j++)
+                    {
+                        var newX = x + dx[j];
+                        var newY = y + dy[j];
+
+                        if (newX < 0 || newX >= matrix.Length || newY < 0 || newY >= matrix[0].Length) continue;
+
+                        if (dist[newX][newY] != -1) continue;
+
+                        dist[newX][newY] = dist[x][y] + 1;
+                        queue.Enqueue(newX * matrix[0].Length + newY);
+                    }
+                }
+            }
+
+            return dist;
         }
     }
 }

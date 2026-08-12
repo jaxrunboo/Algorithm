@@ -133,6 +133,53 @@ namespace Algorithm
 
         // 如果要优化空间复杂度可以在grid中存储信息，把visited去掉，这种一定程度上优化空间，但是如果一个人
         // 真这么做，我就一定会认为这个人没有工程思维
-        
+
+
+
+        public int[][] FloodFill(int[][] image, int sr, int sc, int color)
+        {
+            /*
+            题目内容：
+            给定一个图像，按照题目要求，进行flood fill操作
+            flood fill：从图像的某个起始像素开始，将其和它周围所有相同颜色的像素都填充成新的颜色。
+            
+            示例 1：
+            输入：image = [[1,1,1],[1,1,0],[1,0,1]], sr = 1, sc = 1, color = 2
+            输出：[[2,2,2],[2,2,0],[2,0,1]]
+            解释：
+            从位置 (1, 1) 开始，将所有和位置 (1, 1) 颜色相同的像素填充成颜色 2。
+            注意，右下角的像素没有被填充，因为它不属于初始颜色区域。
+
+            思路：
+            这个明显只是需要遍历即可，所以可以使用DFS，关键点就是visted记录已经访问的内容
+
+            循环中递归四个方向的节点 ，把已访问的节点记录
+            */
+            var originColor = image[sr][sc];
+            if (originColor == color)
+            {
+                return image;
+            }
+
+            FloodFillDFS(image, sr, sc, color, originColor);
+
+
+            return image;
+        }
+
+        private void FloodFillDFS(int[][] image, int i, int j, int color, int originColor)
+        {
+            if (i < 0 || i >= image.Length || j < 0 || j >= image[0].Length
+            || image[i][j] == color || image[i][j] != originColor)
+            {
+                return;
+            }
+            image[i][j] = color;
+            for (int k = 0; k < 4; k++)
+            {
+                FloodFillDFS(image, i + dx[k], j + dy[k], color, originColor);
+            }
+        }
+
     }
 }
