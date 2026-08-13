@@ -181,5 +181,81 @@ namespace Algorithm
             }
         }
 
+
+        public void SurroundedRegions(char[][] board)
+        {
+            /*
+            题目内容：
+            给定一个二维网格，其中包含 'X' 和 'O'，你需要将所有被 'X' 包围的 'O' 都填充为 'X'。
+            
+            示例 1：
+            输入：board = [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]
+            输出：[["X","X","X","X"],["X","X","X","X"],["X","X","X","X"],["X","O","X","X"]]
+            解释：
+            被 'X' 包围的 'O' 都填充为 'X'。
+            示例 2：
+            输入：board = [["X"]]
+            输出：[["X"]]
+            
+            思路：
+            这个明显只是需要遍历即可，所以可以使用DFS，关键点就是visted记录已经访问的内容
+
+            可以是多个数据源(边缘的O)开始去递归
+            如果某个子节点的四边任何一边，有O，就是为他是通的，可以继续递归，直到所有四边的未访问的内容都是封闭的
+
+            */
+
+            var visited = new bool[board.Length, board[0].Length];
+
+            for (int i = 0; i < board.Length; i++)
+            {
+                if (board[i][0] == 'O' && !visited[i, 0])
+                {
+                    SurroundedRegionsDFS(board, visited, i, 0);
+                }
+                if (board[i][board[0].Length - 1] == 'O' && !visited[i, board[0].Length - 1])
+                {
+                    SurroundedRegionsDFS(board, visited, i, board[0].Length - 1);
+                }
+            }
+
+            for (int j = 0; j < board[0].Length; j++)
+            {
+                if (board[0][j] == 'O' && !visited[0, j])
+                {
+                    SurroundedRegionsDFS(board, visited, 0, j);
+                }
+                if (board[board.Length - 1][j] == 'O' && !visited[board.Length - 1, j])
+                {
+                    SurroundedRegionsDFS(board, visited, board.Length - 1, j);
+                }
+            }
+
+            for (int i = 0; i < board.Length; i++)
+            {
+                for (int j = 0; j < board[0].Length; j++)
+                {
+                    if (board[i][j] == 'O' && !visited[i, j])
+                    {
+                        board[i][j] = 'X';
+                    }
+                }
+            }
+
+        }
+
+        private void SurroundedRegionsDFS(char[][] board, bool[,] visited, int i, int j)
+        {
+            if (i < 0 || i >= board.Length || j < 0 || j >= board[0].Length || board[i][j] == 'X' || visited[i, j])
+            {
+                return;
+            }
+            visited[i, j] = true;
+            for (int k = 0; k < 4; k++)
+            {
+                SurroundedRegionsDFS(board, visited, i + dx[k], j + dy[k]);
+            }
+        }
+
     }
 }
