@@ -72,7 +72,7 @@ namespace Algorithm
 
             return result.Count == numCourses;
         }
-    
+
         public int[] CourseScheduleII(int numCourses, int[][] prerequisites)
         {
             /*
@@ -107,6 +107,48 @@ namespace Algorithm
             
 
             */
+
+            var adjacencyList = new List<int>[numCourses];
+            var inDegree = new int[numCourses];
+            var queue = new Queue<int>();
+            var result = new List<int>();
+
+            for (int i = 0; i < numCourses; i++)
+            {
+                adjacencyList[i] = new List<int>();
+            }
+
+            // 构建邻接表和入度数组
+            foreach (var prerequisite in prerequisites)
+            {
+                adjacencyList[prerequisite[1]].Add(prerequisite[0]);
+                inDegree[prerequisite[0]]++;
+            }
+
+            // 将入度为0的课程加入队列
+            for (int i = 0; i < numCourses; i++)
+            {
+                if (inDegree[i] == 0)
+                {
+                    queue.Enqueue(i);
+                }
+            }
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                adjacencyList[current].ForEach(neighbor =>
+                {
+                    inDegree[neighbor]--;
+                    if (inDegree[neighbor] == 0)
+                    {
+                        queue.Enqueue(neighbor);
+                    }
+                });
+                result.Add(current);
+            }
+
+            return result.Count == numCourses ? result.ToArray() : new int[0];
         }
     }
 }
