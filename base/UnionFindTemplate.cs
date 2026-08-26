@@ -98,5 +98,51 @@ namespace Algorithm
         }
 
 
+        public int[] RedundantConnection(int[][] edges)
+        {
+            /*
+            题目（LeetCode 684）：
+            一棵树上有 n 个节点，标号从 1 到 n。再额外添加一条边后，图里恰好出现一个环。
+            返回可以删去使得图重新变成树的那条边。如果有多个答案，返回在 edges 中出现最晚的那条。
+
+            示例 1：
+            输入：edges = [[1,2],[1,3],[2,3]]
+            输出：[2,3]
+            解释：[1,2]、[1,3] 正常建树；处理 [2,3] 时 2 和 3 已经连通，这条边造成环。
+
+            示例 2：
+            输入：edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]
+            输出：[1,4]
+
+            思路：
+            按 edges 顺序逐条处理。若 u 和 v 已经在同一集合（Find(u) == Find(v)），
+            说明这条边是多余的，直接返回；否则 Union(u, v)。
+            注意节点编号从 1 开始，parent 数组开 n+1。
+            */
+
+            var n = edges.Length;
+            var parent = new int[n + 1];
+            var rank = new int[n + 1];
+
+            for (int i = 1; i <= n; i++)
+            {
+                parent[i] = i;
+            }
+
+            foreach (var edge in edges)
+            {
+                var u = edge[0];
+                var v = edge[1];
+                if (Find(parent, u) == Find(parent, v))
+                {
+                    return edge;
+                }
+                Union(parent, rank, u, v);
+            }
+
+            return new int[0];
+        }
+
+
     }
 }
