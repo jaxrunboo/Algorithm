@@ -82,7 +82,7 @@ namespace Algorithm
             else
             {
                 parent[rootX] = rootY;
-                rank[rootX]++;
+                rank[rootY]++;
             }
 
             return true;
@@ -141,6 +141,163 @@ namespace Algorithm
             }
 
             return new int[0];
+        }
+
+
+        public int NumberOfOperationsToMakeNetworkConnected(int n, int[][] connections)
+        {
+            /*
+            题目：
+            有 n 个计算机，编号从 0 到 n-1。给定一个列表 connections，
+            其中 connections[i] = [a, b] 表示计算机 a 和 b 直接相连。
+            返回使所有计算机连通所需的最少操作数。如果无法连通所有计算机，返回 -1。
+
+            思路：
+            一眼并查集
+            
+            边界： 要求线的数量要 >= 节点数 -1
+            然后，判断联通块数量
+            这个值 -1 就是需要的调整的网线数量
+
+            这其中的 n-1 是公式计算出来的
+
+            每个联通块预留的最小网线数量 = S(n) - 1
+            假设有k个联通块
+            整个图需要的最小网线数量 = n - k
+            需要变更的网线数量 = k - 1 
+            总的网线数量 = m
+            m - (n - k) >= k - 1
+            => m >= n - 1
+
+            */
+
+            if (connections.Length < n - 1)
+            {
+                return -1;
+            }
+
+            var parent = new int[n];
+            var rank = new int[n];
+            var count = n;
+
+            for (int i = 0; i < n; i++)
+            {
+                parent[i] = i;
+            }
+
+            for (int i = 0; i < connections.Length; i++)
+            {
+                if (Union(parent, rank, connections[i][0], connections[i][1]))
+                {
+                    count--;
+                }
+            }
+
+            return count - 1;
+
+        }
+
+
+        public List<List<string>> AccountsMerge(List<List<string>> accounts)
+        {
+            /*
+            题目：
+            给定一个列表 accounts，其中每个元素 accounts[i] 是一个字符串列表，表示一个账户的邮箱地址。
+            现在需要将具有相同邮箱地址的账户合并。
+            返回合并后的账户列表。每个账户的邮箱地址列表可以按任意顺序返回。
+
+            所以这种情况，可以使用并查集
+             节点是账户信息，两者可以取交集，有值说明可以合并，但是这种通过list的实现方式很困难
+             应该是各个list的交叉对比，这是不是要 n* n 了
+
+             如果我只把邮箱当做节点，会有更好的处理方式吗
+             先每组账户内部union，再组件union,似乎跟一组账户作为界面，看似没有区别
+
+
+
+            */
+
+            var parent = new Dictionary<string, string>();
+            var rank = new Dictionary<string, int>();
+            var emailToName = new Dictionary<string, string>();
+
+            // 初始化
+            foreach (var account in accounts)
+            {
+                var name = account[0];
+                for (int i = 1; i < account.Count; i++)
+                {
+                    var email = account[i];
+                    if (!parent.ContainsKey(email))
+                    {
+                        parent[email] = email;
+                    }
+                    if (!rank.ContainsKey(email))
+                    {
+                        rank[email] = 0;
+                    }
+                    if (!emailToName.ContainsKey(email))
+                    {
+                        emailToName[email] = name;
+                    }
+                }
+            }
+
+
+            // 各组串联
+            foreach (var account in accounts)
+            {
+                for (int i = 2; i < account.Count; i++)
+                {
+                    UnionEamil(parent, rank, account[1], account[i]);
+                }
+            }
+
+            var result = new List<List<string>>();
+            parent.GroupBy(e => FindEmail(parent, e.Key)).ToList().ForEach(item =>
+            {
+                var list = item.Select(e => e.Key).Distinct().OrderBy(e => e).ToList();
+                var name = emailToName.FirstOrDefault(e => e.Key == list[0]).Value;
+                list.Insert(0, name);
+                result.Add(list);
+            });
+
+            return result;
+
+        }
+
+        // 路径压缩，他做的只是将所有的点联通，但并不是把parent直接指向root
+        private string FindEmail(Dictionary<string, string> parent, string email)
+        {
+            if (parent[email] != email)
+            {
+                parent[email] = FindEmail(parent, parent[email]);
+            }
+            return parent[email];
+        }
+
+        private bool UnionEamil(Dictionary<string, string> parent, Dictionary<string, int> rank, string email1, string email2)
+        {
+            var rootEmail1 = FindEmail(parent, email1);
+            var rootEmail2 = FindEmail(parent, email2);
+            if (rootEmail1 == rootEmail2)
+            {
+                return false;
+            }
+            if (rank[rootEmail1] > rank[rootEmail2])
+            {
+                parent[rootEmail2] = rootEmail1;
+            }
+            else if (rank[rootEmail1] < rank[rootEmail2])
+            {
+                parent[rootEmail1] = rootEmail2;
+            }
+            else
+            {
+                parent[rootEmail1] = rootEmail2;
+                rank[rootEmail2]++;
+            }
+            return true;
         }
 
 
