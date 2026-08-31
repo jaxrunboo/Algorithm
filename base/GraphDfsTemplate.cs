@@ -257,5 +257,36 @@ namespace Algorithm
             }
         }
 
+        public bool KeysAndRooms(int[][] rooms)
+        {
+            /*
+            题目内容：
+            给你一个整数数组 rooms ，其中 rooms[i] 是你进入 i 号房间可获得的钥匙集合。
+            如果房间 i 内有钥匙去往其他房间 j，你可以直接拿走 j 号房间的钥匙，前往 j 号房间。
+            如果你手里有钥匙，并且房间 i 的钥匙可以打开 j 号房间，你可以直接拿走 j 号房间的钥匙，前往 j 号房间。
+            返回你是否能进入所有房间。
+
+            早知道题目中一个房间可能有多个房间的钥匙，我就不会去考虑拓扑排序了
+            这种实际上是需要走完所有房间的，这样才能知道是否完全访问了，所以可以用DFS或者BFS
+            */
+
+            var visited = new bool[rooms.Length];
+            KeysAndRoomsDFS(rooms, visited, 0);
+            return visited.All(v => v);
+        }
+
+        private void KeysAndRoomsDFS(int[][] rooms, bool[] visited, int room)
+        {
+            if (visited[room])
+            {
+                return;
+            }
+            visited[room] = true;
+            foreach (var key in rooms[room])
+            {
+                KeysAndRoomsDFS(rooms, visited, key);
+            }
+        }
+
     }
 }
