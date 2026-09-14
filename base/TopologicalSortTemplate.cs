@@ -150,5 +150,62 @@ namespace Algorithm
 
             return result.Count == numCourses ? result.ToArray() : new int[0];
         }
+
+        public List<int> FindEventualSafeStates(int[][] graph)
+        {
+            /*
+            题目内容：
+            给定一个有向图，找出所有可能的终点节点。
+
+            如果一个节点最终无论怎么走，都不会进入环，那么它就是
+            最终安全的节点
+
+
+            */
+            var adjacencyList = new List<int>[graph.Length];
+            var outDegree = new int[graph.Length];
+            var queue = new Queue<int>();
+            var result = new List<int>();
+
+            for (int i = 0; i < graph.Length; i++)
+            {
+                adjacencyList[i] = new List<int>();
+            }
+
+            for (int i = 0; i < graph.Length; i++)
+            {
+                foreach (var neighbor in graph[i])
+                {
+                    adjacencyList[neighbor].Add(i);
+                    outDegree[i]++;
+                }
+            }
+
+            for (int i = 0; i < graph.Length; i++)
+            {
+                if (outDegree[i] == 0)
+                {
+                    queue.Enqueue(i);
+                }
+            }
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                adjacencyList[current].ForEach(neighbor =>
+                {
+                    outDegree[neighbor]--;
+
+                    if (outDegree[neighbor] == 0)
+                    {
+                        queue.Enqueue(neighbor);
+                    }
+                });
+                result.Add(current);
+            }
+
+            result.Sort();
+            return result.ToList();
+        }
     }
 }
